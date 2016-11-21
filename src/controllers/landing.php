@@ -1,5 +1,5 @@
 <?php
-namespace stormwind\hw3\controllers;
+namespace stormwind\hw4\controllers;
 
 require_once('controller.php');
 class LandingController extends Controller

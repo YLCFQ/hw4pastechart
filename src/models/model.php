@@ -1,5 +1,5 @@
 <?php
-namespace stormwind\hw3\models;
+namespace stormwind\hw4\models;
 
 class Model{
 	protected $mysql;
