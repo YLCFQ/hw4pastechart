@@ -1,5 +1,6 @@
 <?php
 namespace stormwind\hw4\controllers;
+ob_start();
 
 require_once('controller.php');
 

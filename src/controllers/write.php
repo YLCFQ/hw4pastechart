@@ -7,7 +7,6 @@ class WriteController extends Controller
 {
 
 	public function writeData ($title, $content) {
-
 		$model = new \stormwind\hw4\models\WriteModel();
 		$model->initConnection();
 		$str = md5($content);

@@ -14,19 +14,43 @@ class DrawView extends View{
 		$key = $data[1];
 		$title = $data[2];
 		$content = $data[3];
+        $test = [23,5,2];
 		$h1 = new \stormwind\hw4\elements\h1();
+        $content = trim(preg_replace('/\s\s+/', '|', $content));
+        $temp = explode("\n", $content);
+        $modifiedContent = "";
+        for ($i = 0 ; $i<count($temp); $i++) {
+            $modifiedContent = $modifiedContent . $temp[$i] . "|";
+        }
 
 		echo $h1->render("$key $type - PasteChart");
 		?>
 		<div id="container">
     	</div>
 		<script>
-		document.write("sad");
-    	var graph = new Chart("container",{"Jan":[2,3,,5.6], "Feb":[3.5], "Dec":[12.8]}, {"title":"Test Chart - Month v Value"});
+        var chartType = "<?php echo $type ?>";
+
+        var chartTitle = "<?php echo $title ?>";
+
+        var chartData = "<?php echo $content ?>";
+
+
+document.write(chartData);
+        var arr = chartData.split("|");
+        var jsonVariable = {};
+        for (var i = 0 ; i <arr.length ; i++) {
+
+            var subarr = arr[i].split(",");
+            var jsonkey = subarr[0];
+            jsonVariable[jsonkey] = subarr.slice(1, arr.length);
+        }
+        
+
+        var graph = new Chart("container", jsonVariable, {"title":chartTitle});
     	graph.draw();
-    	
 		</script>
 		<?php
+        
 
 	}
 }
