@@ -9,7 +9,14 @@ include 'src/configs/Config.php';
 include 'src/controllers/write.php';
 include 'src/models/write.php';
 
-$db = new initDB();
+include 'src/controllers/draw.php';
+include 'src/models/draw.php';
+include 'src/views/draw.php';
+
+
+$db = new 
+
+initDB();
 $db->createDB();
 
 if(isset($_REQUEST['c'])){
@@ -32,7 +39,8 @@ if(isset($_REQUEST['c'])){
 		}
 	}
     } else if ($controller == "chart") {
-        echo "draw graph";
+        $drawController = new stormwind\hw4\controllers\DrawController();
+        $drawController->drawData($_REQUEST);
     }
 
 
