@@ -11,7 +11,7 @@ class WriteController extends Controller
 		$model->initConnection();
 		$str = md5($content);
 		$model->insertDataIntoDatabase($str, $title, $content);
-		header("Location: http://localhost/hw4/index.php?c=chart&a=show&arg1=LineGraph&arg2=".$str);
+		header("Location: ".BASE_URL."?c=chart&a=show&arg1=LineGraph&arg2=".$str);
 
 	}
 }

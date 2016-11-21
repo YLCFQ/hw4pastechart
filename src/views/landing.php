@@ -13,6 +13,7 @@ class LandingView extends View{
 		$title = new \stormwind\hw4\elements\title();
 		$shareForm = new \stormwind\hw4\helpers\shareForm();
 
+	
 		
 
 		echo $title->render("PasteChart").$h1->render("PasteChart");

@@ -4,8 +4,9 @@ namespace stormwind\hw4\views;
 require_once('view.php');
 require_once('elements/h1.php');
 require_once('elements/title.php');
+require_once('elements/link.php');
 require_once('helpers/shareform.php');
-
+require_once('elements/h5.php');
 class DrawView extends View{
 	public function render($data){
 		//Declare the classes I will be using here
@@ -14,8 +15,13 @@ class DrawView extends View{
 		$key = $data[1];
 		$title = $data[2];
 		$content = $data[3];
-        $test = [23,5,2];
+        $graphs = array("LineGraph", "PointGraph", "Histogram");
+
+
 		$h1 = new \stormwind\hw4\elements\h1();
+        $link = new \stormwind\hw4\elements\Link();
+        $h5 = new \stormwind\hw4\elements\h5();
+
         $content = trim(preg_replace('/\s\s+/', '|', $content));
         $temp = explode("\n", $content);
         $modifiedContent = "";
@@ -24,7 +30,18 @@ class DrawView extends View{
         }
 
 		echo $h1->render("$key $type - PasteChart");
+        for ($i = 0 ; $i < count($graphs) ; $i++) {
+            $graphType = $graphs[$i];
+        echo $h5->render("As a " . $graphType . ":");
+        echo "<p>".$link->render(BASE_URL."?c=chart&a=show&arg1=". $graphType."&arg2=".$key)."</p>";
+        }
+
+
+
+
 		?>
+
+
 		<div id="container">
     	</div>
 		<script>
@@ -42,11 +59,11 @@ document.write(chartData);
 
             var subarr = arr[i].split(",");
             var jsonkey = subarr[0];
-            jsonVariable[jsonkey] = subarr.slice(1, arr.length);
+            jsonVariable[jsonkey] = subarr.slice(1, arr.length+1);
         }
         
 
-        var graph = new Chart("container", jsonVariable, {"title":chartTitle});
+        var graph = new Chart(chartType,"container", jsonVariable, {"title":chartTitle});
     	graph.draw();
 		</script>
 		<?php
@@ -57,9 +74,8 @@ document.write(chartData);
 ?>
 
 <script>
-function Chart(chart_id, data)
+function Chart(chartType, chart_id, data)
 {
-	document.write("hello");
     var self = this;
     var p = Chart.prototype;
     var properties = (typeof arguments[2] !== 'undefined') ?
@@ -89,6 +105,7 @@ function Chart(chart_id, data)
             //PointGraph
         'width' : 500 //width of area to draw into in pixels
     };
+    property_defaults['type'] = chartType;
     for (var property_key in property_defaults) {
         if (typeof properties[property_key] !== 'undefined') {
             this[property_key] = properties[property_key];
@@ -131,7 +148,8 @@ function Chart(chart_id, data)
         for (key in data) {
         	var subData = data[key];
         	for (subkey in subData) {
-        		document.write("\ns:"+subData[subkey]);
+             document.write("max:"+subData[subkey]);
+             subData[subkey] = parseInt(subData[subkey]);
             if (self.min_value === null) {
                 self.min_value = subData[subkey];
                 self.max_value = subData[subkey];
@@ -140,13 +158,17 @@ function Chart(chart_id, data)
             if (subData[subkey] < self.min_value) {
                 self.min_value = subData[subkey];
             }
-            if (subData[subkey]> self.max_value) {
+            if (subData[subkey] > self.max_value) {
                 self.max_value = subData[subkey];
+
             }
+           
         	}
+            self.end = key;
+            self.range = self.max_value - self.min_value;
+            
         }
-        self.end = key;
-        self.range = self.max_value - self.min_value;
+
     }
     /**
      * Used to draw a point at location x,y in the canvas
@@ -181,10 +203,13 @@ function Chart(chart_id, data)
         height -= self.tick_length;
         var min_y = parseFloat(self.min_value);
         var max_y = parseFloat(self.max_value);
+        document.write("what's going on:" + self.max_value + "    ");
         var num_format = new Intl.NumberFormat("en-US",
             {"maximumFractionDigits":2});
         // Draw y ticks and values
         for (var val = min_y; val < max_y + spacing_y; val += spacing_y) {
+
+
             y = self.tick_length + height * 
                 (1 - (val - self.min_value)/self.range);
             c.font = self.tick_font_size + "px serif";
@@ -193,6 +218,7 @@ function Chart(chart_id, data)
             c.beginPath();
             c.moveTo(self.x_padding - self.tick_length, y);
             c.lineTo(self.x_padding, y);
+
             c.stroke();
         }
         // Draw x ticks and values
@@ -265,6 +291,40 @@ function Chart(chart_id, data)
         x += dx;
         }
         c.stroke();
+    }
+
+    p.drawHistogram = function()
+    {
+        self.initMinMaxRange();
+        self.renderAxes();
+        var dx = (self.width - 2*self.x_padding) /
+            (Object.keys(data).length - 1);
+        var c = context;
+        c.lineWidth = self.line_width;
+        c.strokeStyle = self.data_color;
+        c.fillStyle = self.data_color;
+        var height = self.height - self.y_padding - self.tick_length;
+        var x = self.x_padding;
+        for (key in data) {
+            var subData = data[key];
+            for (subkey in subData) {
+            y = self.tick_length + height *
+                (1 - (subData[subkey] - self.min_value)/self.range);
+             document.write("y:" +y);
+            self.plotRectPoint(x, y);
+           
+        }
+         x += dx;
+        }
+    }
+
+        p.plotRectPoint = function(x,y)
+    {
+        var c = context;
+        c.beginPath();
+        c.rect(x,y,40,470-y);
+        c.arc(x, y, self.point_radius, 0, 2 * Math.PI, true);
+        c.fill();
     }
 }
 </script>
