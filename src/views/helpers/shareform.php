@@ -29,7 +29,7 @@ function validateForm() {
     var y = document.forms["shareform"]["content"].value;
     var arr = y.split("\n");
     if (x == "") {
-        alert("Name must be filled out");
+        alert("Title must be filled out");
         return false;
     }
     
