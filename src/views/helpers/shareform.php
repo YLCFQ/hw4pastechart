@@ -45,11 +45,17 @@ function validateForm() {
     }
     for (var i = 0 ; i <arr.length ; i++) {
     	var subarr = arr[i].split(",");
+        for (var j = 1 ; j <subarr.length ; j++) {
+            if (isNaN(subarr[j])) {
+                alert("values have to be an legal integer number ");
+                return false;
+            }
+        }
     	if (arr[i].length > 80) {
     		alert("Each rows must be lower than 80 characters");
     		return false;
     	}
-    	if (subarr.length > 5 || subarr.length <= 0) {
+    	if (subarr.length > 6 || subarr.length <= 0) {
     		alert("The sources have to less than or equal to 5 and greater 0 each row");
     		return false;
     	}

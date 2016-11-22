@@ -1,0 +1,13 @@
+{
+	"name": "stormwind/hw4",
+	"type": "project",
+    "require": {
+        "simpletest/simpletest": "^1.1"
+    },
+    "autoload": {
+    	"psr-4": {
+    		"stormwind\\hw4\\": ["src/"],
+    		"stormwind\\hw4\\tests\\": ["tests/"]
+    	}
+    }
+}
