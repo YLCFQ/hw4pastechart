@@ -1,0 +1,4 @@
+<!ELEMENT Chart (Label*)>
+<!ELEMENT Label (Point, Point?, Point?, Point?, Point?)>
+<!ATTLIST Label name CDATA #REQUIRED>
+<!ELEMENT Point (#PCDATA)>

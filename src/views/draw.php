@@ -15,7 +15,7 @@ class DrawView extends View{
 		$key = $data[1];
 		$title = $data[2];
 		$content = $data[3];
-        $graphs = array("LineGraph", "PointGraph", "Histogram");
+        $graphs = array("LineGraph", "PointGraph", "Histogram", "XML data", "JSON data", "JSONP data");
 
 
 		$h1 = new \stormwind\hw4\elements\h1();
@@ -30,15 +30,7 @@ class DrawView extends View{
         }
 
 		echo $h1->render("$key $type - PasteChart");
-        for ($i = 0 ; $i < count($graphs) ; $i++) {
-            $graphType = $graphs[$i];
-        echo $h5->render("As a " . $graphType . ":");
-        echo "<p>".$link->render(BASE_URL."?c=chart&a=show&arg1=". $graphType."&arg2=".$key)."</p>";
-        }
-
-
-
-
+        
 		?>
 
 
@@ -55,7 +47,6 @@ class DrawView extends View{
 
         var arr = chartData.split("|");
         var jsonVariable = {};
-        document.write(arr);
         for (var i = 0 ; i <arr.length ; i++) {
         
             var subarr = arr[i].split(",");
@@ -65,23 +56,89 @@ class DrawView extends View{
 
 
         }
+        //showXML(chartTitle,chartData);
         
-
+        if (chartType=="LineGraph" || chartType=="PointGraph" || chartType=="Histogram"  ){
         var graph = new Chart(chartType,"container", jsonVariable, {"title":chartTitle});
     	graph.draw();
+        } else if (chartType=="xml") {
+            showXML(chartTitle, chartData);
+        } else if (chartType=="json") {
+            showJSON(jsonVariable);
+        } else if (chartType=="jsonp") {
+            showJSONP(jsonVariable);
+        }
 		</script>
 		<?php
-        
+        $tempKey = $key;
+        for ($i = 0 ; $i < count($graphs) ; $i++) {
+            $graphType = $graphs[$i];
+        echo $h5->render("As a " . $graphType . ":");
+        if($graphType == "XML data")
+            $graphType = "xml";
+        if($graphType == "JSON data")
+            $graphType = "json";
+        if ($graphType =="JSONP data") {
+            $graphType = "jsonp";
+            $tempKey = $tempKey."&arg3=foo";
+        }
+        echo "<p>".$link->render(BASE_URL."?c=chart&a=show&arg1=". $graphType."&arg2=".$tempKey)."</p>";
+        }
+
 
 	}
 }
 ?>
 
 <script>
-function showXML(data){
+function showJSON(data) {
+    var str = JSON.stringify(data, null, 2);
+    document.write(str);
+}
+function showJSONP(data) {
+    var str = JSON.stringify(data, null, 2);
+    document.write("foo("+str+")");
+}
+function showXML(titile, data){
+     var arr = chartData.split("|");
+     document.write("<br>");
+     document.write(escapeHtml("<Data>"));
+     
+     for (var i = 0 ; i <arr.length ; i++) {
+        
+            var subarr = arr[i].split(",");
+            var labelname = subarr[0];
+            document.write("<br>&nbsp;&nbsp;&nbsp;&nbsp;");
+            document.write (escapeHtml("<Label name='"+labelname+"'>"));
+            document.write("<br>");
+            for (var j = 1 ; j < subarr.length; j++) {
+                if (!isNaN(subarr[j]) && subarr[j] !== undefined && subarr[j] !=""){
+                    document.write("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+                    document.write (escapeHtml("<Point>"+subarr[j]+"</Point>"));
+                    document.write("<br>");
+                }
+            }
+            document.write("&nbsp;&nbsp;&nbsp;&nbsp;");
+            document.write (escapeHtml("</Label>"));
+            
 
+        }
+        document.write("<br>");
+        document.write(escapeHtml("</Data>"));
+    
 }
 
+function escapeHtml(text) {
+  var map = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;'
+  };
+
+  return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+}
 
 
 function Chart(chartType, chart_id, data)
@@ -309,7 +366,6 @@ function Chart(chartType, chart_id, data)
                     
                 y = self.tick_length + height * 
                  (1 - (temp - self.min_value)/self.range);
-                 document.write ("<br>x is " + x+ "<br>y is : "+y);
                  c.lineTo(x, y);
                  
                 }
