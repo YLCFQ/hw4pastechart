@@ -52,14 +52,18 @@ class DrawView extends View{
         var chartData = "<?php echo $content ?>";
 
 
-document.write(chartData);
+
         var arr = chartData.split("|");
         var jsonVariable = {};
+        document.write(arr);
         for (var i = 0 ; i <arr.length ; i++) {
-
+        
             var subarr = arr[i].split(",");
             var jsonkey = subarr[0];
-            jsonVariable[jsonkey] = subarr.slice(1, arr.length+1);
+
+            jsonVariable[jsonkey] = subarr.slice(1, subarr.length+1);
+
+
         }
         
 
@@ -74,8 +78,15 @@ document.write(chartData);
 ?>
 
 <script>
+function showXML(data){
+
+}
+
+
+
 function Chart(chartType, chart_id, data)
-{
+{   
+
     var self = this;
     var p = Chart.prototype;
     var properties = (typeof arguments[2] !== 'undefined') ?
@@ -148,7 +159,6 @@ function Chart(chartType, chart_id, data)
         for (key in data) {
         	var subData = data[key];
         	for (subkey in subData) {
-             document.write("max:"+subData[subkey]);
              subData[subkey] = parseInt(subData[subkey]);
             if (self.min_value === null) {
                 self.min_value = subData[subkey];
@@ -164,10 +174,10 @@ function Chart(chartType, chart_id, data)
             }
            
         	}
-            self.end = key;
-            self.range = self.max_value - self.min_value;
             
         }
+        self.end = key;
+        self.range = self.max_value - self.min_value;
 
     }
     /**
@@ -203,7 +213,7 @@ function Chart(chartType, chart_id, data)
         height -= self.tick_length;
         var min_y = parseFloat(self.min_value);
         var max_y = parseFloat(self.max_value);
-        document.write("what's going on:" + self.max_value + "    ");
+
         var num_format = new Intl.NumberFormat("en-US",
             {"maximumFractionDigits":2});
         // Draw y ticks and values
@@ -258,7 +268,6 @@ function Chart(chartType, chart_id, data)
         	for (subkey in subData) {
             y = self.tick_length + height *
                 (1 - (subData[subkey] - self.min_value)/self.range);
-             document.write("x:" +x);
             self.plotPoint(x, y);
            
         }
@@ -280,16 +289,46 @@ function Chart(chartType, chart_id, data)
         var height = self.height - self.y_padding  - self.tick_length;
         c.moveTo(x, self.tick_length + height * (1 -
             (data[self.start] - self.min_value)/self.range));
-        for (key in data) {
+        var originX = x;
+
+        var array = Object.keys(data).map(function (key) { return data[key]; });
+        
+        var color = ['#ff2000', '#68C7C7', '#6837C7', '#C7665B', '#C7665B'];
+
+        for (i = 0 ; i < 5; i++) {
+            x = originX;
+            c.beginPath();
+            c.moveTo(x, self.tick_length + height * (1 -
+            (data[self.start] - self.min_value)/self.range));
+            for (j = 0 ; j < array.length ; j++) {
+                
+                var temp = array[j][i];
+                
+
+                if ( !isNaN(temp)  && temp !== undefined){
+                    
+                y = self.tick_length + height * 
+                 (1 - (temp - self.min_value)/self.range);
+                 document.write ("<br>x is " + x+ "<br>y is : "+y);
+                 c.lineTo(x, y);
+                 
+                }
+            c.strokeStyle = color[i];
+            x += dx;
+            }
+            c.stroke();
+        }
+        /*for (key in data) {
+            x = originX;
         	var subData = data[key];
         	for (subkey in subData) {
             y = self.tick_length + height * 
                 (1 - (subData[subkey] - self.min_value)/self.range);
             c.lineTo(x, y);
-            
+            x += dx;
         }
-        x += dx;
-        }
+       
+        }*/
         c.stroke();
     }
 
@@ -305,16 +344,18 @@ function Chart(chartType, chart_id, data)
         c.fillStyle = self.data_color;
         var height = self.height - self.y_padding - self.tick_length;
         var x = self.x_padding;
+
         for (key in data) {
             var subData = data[key];
+            var dis = 0;
             for (subkey in subData) {
             y = self.tick_length + height *
                 (1 - (subData[subkey] - self.min_value)/self.range);
-             document.write("y:" +y);
             self.plotRectPoint(x, y);
-           
-        }
-         x += dx;
+            x+= 10;
+            dis+=10;
+            }
+         x += dx-dis-10;
         }
     }
 
@@ -322,8 +363,7 @@ function Chart(chartType, chart_id, data)
     {
         var c = context;
         c.beginPath();
-        c.rect(x,y,40,470-y);
-        c.arc(x, y, self.point_radius, 0, 2 * Math.PI, true);
+        c.rect(x,y,10,470-y);
         c.fill();
     }
 }
