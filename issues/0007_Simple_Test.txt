@@ -1,0 +1,3 @@
+title: handle the installation of Simpletest and write unit tests
+assigned: Yulong Chen
+description: install Simpletest by using composer, and write at least two unit tests.

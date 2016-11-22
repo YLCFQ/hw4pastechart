@@ -1,0 +1,3 @@
+title: create basic landing and draw page
+assigned: Nanthana Thanonklin
+description: make the basic web page based on the requirement

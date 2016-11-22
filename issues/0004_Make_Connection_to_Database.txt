@@ -1,0 +1,3 @@
+title: data validation in client side and server side
+assigned: Yulong Chen
+description: Check the data format based on the requirement. First ,check in client side before the form is submitted. Next, check in the server side.

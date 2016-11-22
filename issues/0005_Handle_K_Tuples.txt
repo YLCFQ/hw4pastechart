@@ -1,0 +1,3 @@
+title: chart.js enhanced to handle k-tuples and histograms
+assigned: Yulong Chen
+description: make the chart.js able to take array of values in parameter instead of only one va
